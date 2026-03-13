@@ -1,0 +1,36 @@
+name: 🕵️ Operação Stealth B2C (Diária)
+
+on:
+  schedule:
+    # Roda todos os dias às 16:00 Horário de Brasília (19:00 UTC)
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+    # Permite que você clique em "Run Workflow" para rodar manualmente se quiser testar!
+
+jobs:
+  run-stealth-bot:
+    name: Procurar Leads no Reddit (B2C)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar Código Fonte
+        uses: actions/checkout@v4
+        
+      - name: 🐍 Preparar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: 📦 Instalar Bibliotecas Requeridas
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests python-dotenv openai
+          
+      - name: 🚀 Executar Bot de Infiltração
+        env:
+          # Para que o bot funcione na nuvem, ele precisa puxar essas chaves dos "Secrets" do seu repositório no GitHub.
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python execution/reddit_stealth_bot.py
