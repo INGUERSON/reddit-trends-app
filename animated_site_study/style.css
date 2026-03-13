@@ -1,0 +1,272 @@
+/* Reset Premium Básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    cursor: none; /* Desativa cursor padrão para usar o nosso */
+}
+
+body {
+    background-color: #0d0e15; /* Tema Dark Elegante */
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+/* Custom Cursor */
+.cursor {
+    width: 20px;
+    height: 20px;
+    background-color: #00d2ff;
+    border-radius: 50%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: exclusion;
+    transform: translate(-50%, -50%);
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 5%;
+    position: absolute;
+    width: 100%;
+    z-index: 100;
+}
+
+.logo {
+    font-weight: 900;
+    font-size: 1.5rem;
+}
+
+.logo span {
+    color: #00d2ff;
+}
+
+nav {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: #a0a5b8;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #fff;
+}
+
+/* Hero Section */
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-content {
+    max-width: 600px;
+    z-index: 10;
+}
+
+.headline {
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    /* Ajuste para SplitType, restringe as letras dentro do container antes de subir */
+    clip-path: polygon(0 0, 100% 0, 100% 120%, 0% 120%);
+}
+
+/* O SplitType separa os elementos. Quando configurado como chars/words, criam divs embutidas. */
+.char {
+    display: inline-block;
+}
+
+.word {
+    display: inline-block;
+    overflow: hidden; /* Importante para o efeito de "reveal" subindo */
+}
+
+.subheadline {
+    font-size: 1.2rem;
+    color: #a0a5b8;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+.cta-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+    color: white;
+    box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Formas Decorativas Animadas */
+.hero-visual {
+    position: absolute;
+    right: 5%;
+    width: 500px;
+    height: 500px;
+    z-index: 1;
+}
+
+.shape {
+    position: absolute;
+    background: linear-gradient(45deg, rgba(0,210,255,0.1), rgba(58,123,213,0.3));
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+}
+
+.circle {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    top: 10%;
+    left: 10%;
+}
+
+.square {
+    width: 180px;
+    height: 180px;
+    border-radius: 20px;
+    bottom: 20%;
+    right: 10%;
+    transform: rotate(15deg);
+}
+
+.triangle {
+    width: 0;
+    height: 0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-bottom: 173px solid rgba(0,210,255,0.2);
+    top: 40%;
+    left: 60%;
+    transform: rotate(-25deg);
+    filter: drop-shadow(0 25px 50px rgba(0,0,0,0.5));
+}
+
+/* Seção de Scroll */
+.scroll-section {
+    min-height: 100vh;
+    padding: 10rem 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #090a0f;
+}
+
+.scroll-title {
+    font-size: 3rem;
+    margin-bottom: 4rem;
+    background: linear-gradient(90deg, #ff8a00, #e52e71);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.cards-container {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    flex: 1;
+    transform: translateY(100px);
+    opacity: 0;
+}
+
+.card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.card p {
+    color: #a0a5b8;
+    line-height: 1.6;
+}
+
+/* Nova Grid Section */
+.grid-section {
+    min-height: 100vh;
+    padding: 10rem 5%;
+    background: #0d0e15;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.grid-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.grid-subtitle {
+    color: #a0a5b8;
+    margin-bottom: 4rem;
+    font-size: 1.2rem;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.grid-item {
+    background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.05));
+    border-radius: 12px;
+    height: 200px;
+    border: 1px solid rgba(255,255,255,0.05);
+    /* Estado inicial para a animação do grid */
+    transform: scale(0.5);
+    opacity: 0;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.grid-item:hover {
+    background: rgba(0, 210, 255, 0.1);
+    border-color: rgba(0, 210, 255, 0.3);
+}

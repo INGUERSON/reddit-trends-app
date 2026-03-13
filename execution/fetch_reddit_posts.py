@@ -74,7 +74,29 @@ def analyze_subreddit_fallback(subreddit_name, limit=100, top_count=5):
         posts.sort(key=lambda x: x['engagement'], reverse=True)
         return posts[:top_count]
     except Exception as e:
-        print(f"Error fetching r/{subreddit_name} via fallback: {e}")
+        print(f"Error fetching r/{subreddit_name} via fallback JSON: {e}")
+        print("Attempting Firecrawl scrape fallback...")
+        
+        # Integrate Firecrawl Scraping Fallback
+        try:
+            import scrape_single_site
+            firecrawl_url = f"https://www.reddit.com/r/{subreddit_name}/"
+            saved_file = scrape_single_site.scrape_url(firecrawl_url)
+            if saved_file:
+                return [{
+                    'title': f"[FIRECRAWL SCRAPED] r/{subreddit_name} Data",
+                    'url': firecrawl_url,
+                    'score': 0,
+                    'num_comments': 0,
+                    'engagement': 0,
+                    'created_utc': 0,
+                    'selftext': f"Raw contents fetched bypassing Reddit blocks. File saved to: {saved_file}"
+                }]
+        except ImportError as ie:
+            print(f"Firecrawl script not found for integration: {ie}")
+        except Exception as fc_e:
+            print(f"Firecrawl scrape also failed: {fc_e}")
+            
         return []
 
 def main():

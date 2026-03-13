@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudo de Animação Web | GSAP Avançado</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- SplitType para animação de textos letra por letra -->
+    <script src="https://unpkg.com/split-type"></script>
+</head>
+<body>
+    
+    <!-- Cursor Customizado -->
+    <div class="cursor"></div>
+
+    <header class="header">
+        <h2 class="logo">Mestre<span>Anima</span></h2>
+        <nav>
+            <a href="#" class="nav-link">Início</a>
+            <a href="#" class="nav-link">Cursos</a>
+            <a href="#" class="nav-link">Contato</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="headline">A Arte de Animar a Web</h1>
+                <p class="subheadline">
+                    Aprenda o segredo dos sites premium. Vamos abandonar o estático e dar vida aos nossos projetos usando a ferramenta dos gigantes: GSAP.
+                </p>
+                <div class="cta-container">
+                    <button class="btn btn-primary">Começar Jornada</button>
+                    <button class="btn btn-secondary">Ver Demonstração</button>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <!-- Objetos geométricos flutuantes para animar -->
+                <div class="shape circle"></div>
+                <div class="shape square"></div>
+                <div class="shape triangle"></div>
+            </div>
+        </section>
+
+        <!-- Seção de Rolagem (Para ScrollTrigger) -->
+        <section class="scroll-section">
+            <h2 class="scroll-title">A Mágica do Scroll</h2>
+            <div class="cards-container">
+                <div class="card card-1">
+                    <h3>Padrão Ouro</h3>
+                    <p>Sites como Apple e Awwwards usam animações atreladas ao scroll para contar histórias.</p>
+                </div>
+                <div class="card card-2">
+                    <h3>Performance</h3>
+                    <p>Animações CSS transform (GPU) garantem sempre 60 frames por segundo (FPS).</p>
+                </div>
+                <div class="card card-3">
+                    <h3>Interação</h3>
+                    <p>O usuário controla a velocidade da "cena" com o mouse do próprio dispositivo.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Nova Seção: Grid Dinâmico -->
+        <section class="grid-section">
+            <h2 class="grid-title">Layouts Dinâmicos</h2>
+            <p class="grid-subtitle">Animações em rede (stagger) baseadas em proximidade visual.</p>
+            <div class="grid-container">
+                <div class="grid-item"></div>
+                <div class="grid-item"></div>
+                <div class="grid-item"></div>
+                <div class="grid-item"></div>
+                <div class="grid-item"></div>
+                <div class="grid-item"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- GSAP (GreenSock Animation Platform) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <!-- Nosso Script Customizado -->
+    <script src="script.js"></script>
+</body>
+</html>
