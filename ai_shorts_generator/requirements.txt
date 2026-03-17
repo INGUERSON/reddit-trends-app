@@ -6,3 +6,7 @@ requests
 pillow
 cryptography
 yt-dlp
+pytubefix
+numpy
+imageio-ffmpeg
+firecrawl-py

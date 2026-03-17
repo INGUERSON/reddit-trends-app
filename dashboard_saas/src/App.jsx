@@ -39,10 +39,12 @@ function App() {
   const [selectedLead, setSelectedLead] = useState(null);
   const [leads, setLeads] = useState(INITIAL_LEADS);
   const [finance, setFinance] = useState({ disponivel: 0, pendente: 0, total: 0, transacoes: [] });
-  const [botsActive, setBotsActive] = useState({ b2b: false, reddit: false, shorts: false });
+  const [botsActive, setBotsActive] = useState({ b2b: true, reddit: true, shorts: false });
   const [logs, setLogs] = useState([
     { type: 'info', text: 'Sistemas LindaOS v2.0 carregados...' },
-    { type: 'success', text: 'Conexão segura estabelecida com o Império.' }
+    { type: 'success', text: 'Conexão segura estabelecida com o Império.' },
+    { type: 'success', text: 'Bot B2B Hacker: Ativo & Patrulhando Leads...' },
+    { type: 'success', text: 'Bot Stealth Reddit: Interceptando dores no r/investimentos...' }
   ]);
   const terminalRef = useRef(null);
 
