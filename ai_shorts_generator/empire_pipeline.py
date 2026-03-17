@@ -73,7 +73,10 @@ def execute_full_cycle():
 def run_single_cycle():
     """Usado pelo GitHub Actions para rodar apenas uma vez"""
     load_dotenv()
-    execute_full_cycle()
+    success = execute_full_cycle()
+    if not success:
+        print("❌ Ciclo falhou ou nenhum vídeo foi encontrado.")
+        sys.exit(1)
 
 def run_empire_pipeline():
     while True:

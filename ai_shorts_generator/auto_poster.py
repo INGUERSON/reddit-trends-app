@@ -58,7 +58,7 @@ def generate_social_copy(niche, lang="pt"):
             temperature=0.7,
             max_tokens=600
         )
-        processed_content = content.replace("CAPTION:", "LEGENDA:").replace("COMMENT:", "COMENTÁRIO:")
+        processed_content = response.choices[0].message.content.replace("CAPTION:", "LEGENDA:").replace("COMMENT:", "COMENTÁRIO:")
         
         caption = processed_content.split("COMENTÁRIO:")[0].replace("LEGENDA:", "").strip()
         comment = processed_content.split("COMENTÁRIO:")[1].strip() if "COMENTÁRIO:" in processed_content else comment_fallback
