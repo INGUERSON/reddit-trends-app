@@ -75,40 +75,49 @@ def edit_and_render_clip(video_path, audio_path, start_time, end_time, words_dat
     
     subtitle_clips = []
     
-    # VIRAL STYLE: 1 palavra por vez jogada na tela para prender absoluta atenção
-    group_size = 1
-    for i in range(0, len(clip_words), group_size):
-        chunk = clip_words[i:i+group_size]
-        if not chunk: continue
+    # VIRAL STYLE: 1 palavra por vez na tela (ajuste para evitar sobreposição)
+    for i in range(len(clip_words)):
+        word_data = clip_words[i]
         
-        # Junta e limpa pontuações estranhas (opcional) no meio da tela
-        # Removemos pontuação do final da palavra para o texto ficar limpo
-        raw_word = " ".join([w['word'] for w in chunk]).strip().upper()
+        raw_word = word_data['word'].strip().upper()
+        if not raw_word: continue
         text = raw_word.replace('.', '').replace(',', '').replace('?', '').replace('!', '')
         
         # Ajusta tempo começando do ZERO (porque carregamos como um subclip)
-        t_start = chunk[0]['start'] - start_time
-        t_end = chunk[-1]['end'] - start_time
+        t_start = word_data['start'] - start_time
+        
+        # Para evitar que palavras fiquem "uma em cima da outra", force a duração a terminar no início da próxima palavra
+        if i < len(clip_words) - 1:
+            t_end = clip_words[i+1]['start'] - start_time
+        else:
+            t_end = word_data['end'] - start_time
+            
         duration = t_end - t_start
         
-        # Prevenção: Palavras faladas muito rapidamente
+        # Prevenção: Palavras faladas muito rapidamente ou com erro
         if duration <= 0:
-            duration = 0.4
+            duration = 0.2
             
         txt_clip = make_text_clip(text, duration, video.w)
-        # Posiciona visualmente no meio da tela um pouquinho para baixo
-        txt_clip = txt_clip.set_position(('center', 'center')).set_start(t_start)
+        # 1. Posiciona visualmente livre do centro (mais para baixo: ex. 65% da altura)
+        txt_clip = txt_clip.set_position(('center', video.h * 0.65)).set_start(t_start)
         subtitle_clips.append(txt_clip)
 
     print(f"✍️ {len(subtitle_clips)} frames de legenda animada gerados com sucesso...")
 
+    # 3.5 Adicionar a Marca D'água / Call to Action (CTA) do AutoCash 2026 FIXA na tela
+    cta_text = "🔗 Link na Bio: AutoCash 2026"
+    cta_clip = make_text_clip(cta_text, duration=video.duration, max_width=video.w, fontsize=40, color="#00F0FF")
+    # Colocar no finalzinho da tela (embaixo das legendas)
+    cta_clip = cta_clip.set_position(('center', video.h * 0.85)).set_start(0)
+
     # 4. Queimando tudo junto no filme
-    final_video = CompositeVideoClip([video] + subtitle_clips)
+    final_video = CompositeVideoClip([video] + subtitle_clips + [cta_clip])
     
     print(f"⚙️ Renderizando (ISSO PODE DEMORAR ALGUNS MINUTOS NESTE PC)...")
     
     try:
-        # A magia negra do FFmpeg. Render usando libx264 e limpando sujeira do cache.
+        # Usando 'ultrafast' para não queimar a CPU do seu PC e bitrate otimizado para celulares
         final_video.write_videofile(
             output_filename, 
             codec="libx264", 
@@ -116,9 +125,9 @@ def edit_and_render_clip(video_path, audio_path, start_time, end_time, words_dat
             temp_audiofile=f"{output_filename}_temp.m4a", 
             remove_temp=True,
             logger=None,    
-            threads=4,     # Multithreading pro PC suar
-            preset="fast", # Acelera bastante a taxa de render
-            bitrate="8000k" # Qualidade muito maior (High Bitrate)
+            threads=os.cpu_count() or 4,     # Usa todos os núcleos que o PC permitir
+            preset="ultrafast", # Muito mais rápido render
+            bitrate="4000k" # Qualidade boa (TikTok) e tamanho de arquivo leve
         )
         print(f"🚀✅ SUCESSO! CLIPE SALVO COMO: {output_filename}")
     except Exception as e:

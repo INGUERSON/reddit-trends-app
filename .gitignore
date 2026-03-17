@@ -1,9 +1,37 @@
+# Intermediates and sensitive
 .tmp/
 .env
+master.key
+session.json
 credentials.json
 token.json
+error.log
+
+# Python
 __pycache__/
 *.pyc
+.venv/
+downloads/
+output/
+test_*.py
+update_pass.py
+test_crypto.py
+test_ig.py
+
+# Video/Audio
 *.mp4
+*.mp3
 *.m4a
+*.wav
 *.zip
+
+# Node/React
+node_modules/
+dist/
+build/
+.eslintcache
+.next/
+
+# OS files
+.DS_Store
+Thumbs.db

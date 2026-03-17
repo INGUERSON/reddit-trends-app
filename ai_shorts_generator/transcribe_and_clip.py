@@ -4,9 +4,15 @@ import math
 from openai import OpenAI
 from moviepy.editor import AudioFileClip
 from dotenv import load_dotenv
+from secure_vault import decrypt_value
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Descriptografia de Segurança (AES-256)
+encrypted_key = os.getenv("OPENAI_API_KEY")
+api_key = decrypt_value(encrypted_key) if encrypted_key and encrypted_key.startswith("gAAAA") else encrypted_key
+
+client = OpenAI(api_key=api_key)
 
 def split_audio(audio_path, chunk_length_sec=600):
     """
@@ -86,10 +92,10 @@ def identify_viral_clips(transcript_text, num_clips=3):
     print("🧠 Analisando roteiro com GPT-4o para encontrar momentos virais...")
     
     system_prompt = (
-        "Você é um Produtor de Vídeos Curtos Viral (TikTok, Reels, Shorts). "
+        "Você é um Produtor de Vídeos Curtos Viral focado no nicho de Podcasts e Marketing Digital (TikTok, Reels, Shorts). "
         "Abaixo você receberá a transcrição completa de um podcast/vídeo. "
-        f"Sua missão é extrair os {num_clips} trechos MAIS interessantes, polêmicos, inspiradores ou divertidos "
-        "que dariam cortes virais autônomos (de 30 a 60 segundos de duração cada).\n\n"
+        f"Sua missão é extrair os {num_clips} trechos MAIS interessantes que falam sobre: como criar e monetizar um podcast, marketing digital, produção de conteúdo e negócios online. "
+        "Eles devem se tornar cortes virais autônomos (de 30 a 60 segundos de duração cada).\n\n"
         "REGRAS VITAIS:\n"
         "1. Retorne EXATAMENTE e APENAS no formato JSON detalhado abaixo.\n"
         "2. Os campos obrigatórios são: 'title' (título clickbait), 'start_quote' (exatamente as primeiras 4-5 palavras de onde o corte começa), "
@@ -188,6 +194,11 @@ def align_clip_timestamps(clips, words_data):
             end_time = words_data[last_word_idx]['end']
             
             if end_time > start_time:
+                # Prevenção Crítica de Memória: Garantir que o clipe nunca ultrapasse 90 segundos 
+                if (end_time - start_time) > 90:
+                    print(f"⚠️ Duração exagerada detectada ({(end_time - start_time):.1f}s). Cortando para 90s...")
+                    end_time = start_time + 90.0
+
                 clip['start_time'] = start_time
                 clip['end_time'] = end_time
                 final_clips.append(clip)
