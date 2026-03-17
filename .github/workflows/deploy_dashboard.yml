@@ -1,10 +1,11 @@
-name: 🚀 Deploy Dashboard (Império)
+name: 🚀 Deploy Império & LindaOS
 
 on:
   push:
     branches: ["main"]
     paths:
       - 'dashboard_saas/**'
+      - 'landing_page_renda/**'
   workflow_dispatch:
 
 permissions:
@@ -30,20 +31,28 @@ jobs:
           cache: 'npm'
           cache-dependency-path: dashboard_saas/package-lock.json
 
-      - name: 📦 Install dependencies
+      - name: 📦 Install and Build Dashboard
         run: |
           cd dashboard_saas
           npm install
-
-      - name: 🛠️ Build
-        run: |
-          cd dashboard_saas
           npm run build
+
+      - name: 📁 Prepare Production Bundle
+        run: |
+          # Create a directory for the combined site
+          mkdir combined_dist
+          
+          # 1. Put the Empire site (landing_page_renda) in the root
+          cp -r landing_page_renda/* combined_dist/
+          
+          # 2. Put the LindaOS Dashboard (dashboard_saas) in /dashboard
+          mkdir combined_dist/dashboard
+          cp -r dashboard_saas/dist/* combined_dist/dashboard/
 
       - name: 📁 Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dashboard_saas/dist
+          path: combined_dist
 
   deploy:
     environment:
