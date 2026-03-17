@@ -1,6 +1,8 @@
 name: 🌐 Gerador Viral Global (10h)
 
 on:
+  push:
+    branches: [ main ]
   schedule:
     # Como o cron não aceita intervalos de 10h perfeitos com precisão, 
     # rodamos a cada 10 horas via workflow_dispatch ou simulado

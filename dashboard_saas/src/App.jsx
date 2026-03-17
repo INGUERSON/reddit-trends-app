@@ -173,6 +173,10 @@ function App() {
                    <Activity size={14} color="#7000FF" /> Central de Inteligência
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                  <div style={{ fontSize: '0.8rem', color: '#fff', padding: '0.5rem', borderRadius: '8px', background: 'rgba(0,150,255,0.1)', border: '1px solid rgba(0,150,255,0.2)' }}>
+                    <div style={{ color: '#0096ff', fontWeight: 600, marginBottom: '2px' }}>☁️ Nuvem Ativa</div>
+                    GitHub Actions sincronizado. O robô irá rodar mesmo com este PC desligado.
+                  </div>
                   <div style={{ fontSize: '0.8rem', color: '#fff', padding: '0.5rem', borderRadius: '8px', background: 'rgba(112,0,255,0.1)', border: '1px solid rgba(112,0,255,0.2)' }}>
                     <div style={{ color: '#7000FF', fontWeight: 600, marginBottom: '2px' }}>🌐 Expansão Global Ativada</div>
                     Busca de nichos internacionais (EN) iniciada para alcance mundial.
