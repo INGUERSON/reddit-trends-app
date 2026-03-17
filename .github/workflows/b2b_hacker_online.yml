@@ -28,9 +28,9 @@ jobs:
           
       - name: 🚀 Executar Bot B2B Hacker
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}"
+          FIRECRAWL_API_KEY: "${{ secrets.FIRECRAWL_API_KEY }}"
+          TELEGRAM_BOT_TOKEN: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          TELEGRAM_CHAT_ID: "${{ secrets.TELEGRAM_CHAT_ID }}"
         run: |
           python execution/b2b_hacker.py

@@ -29,8 +29,8 @@ jobs:
       - name: 🚀 Executar Bot de Infiltração
         env:
           # Para que o bot funcione na nuvem, ele precisa puxar essas chaves dos "Secrets" do seu repositório no GitHub.
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}"
+          TELEGRAM_BOT_TOKEN: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          TELEGRAM_CHAT_ID: "${{ secrets.TELEGRAM_CHAT_ID }}"
         run: |
           python execution/reddit_stealth_bot.py
