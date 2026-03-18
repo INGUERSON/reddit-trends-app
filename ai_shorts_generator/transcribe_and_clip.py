@@ -92,16 +92,17 @@ def identify_viral_clips(transcript_text, num_clips=3):
     print("🧠 Analisando roteiro com GPT-4o para encontrar momentos virais...")
     
     system_prompt = (
-        "Você é um Produtor de Vídeos Curtos Viral focado no nicho de Podcasts e Marketing Digital (TikTok, Reels, Shorts). "
-        "Abaixo você receberá a transcrição completa de um podcast/vídeo. "
-        f"Sua missão é extrair os {num_clips} trechos MAIS interessantes que falam sobre: como criar e monetizar um podcast, marketing digital, produção de conteúdo e negócios online. "
-        "Eles devem se tornar cortes virais autônomos (de 30 a 60 segundos de duração cada).\n\n"
-        "REGRAS VITAIS:\n"
-        "1. Retorne EXATAMENTE e APENAS no formato JSON detalhado abaixo.\n"
-        "2. Os campos obrigatórios são: 'title' (título clickbait), 'start_quote' (exatamente as primeiras 4-5 palavras de onde o corte começa), "
-        "e 'end_quote' (exatamente as 4-5 palavras finais do corte).\n"
-        "3. A duração do trecho entre o start_quote e o end_quote não pode ser menor que 20s nem maior que 90s.\n"
-        "4. NADA de markdown envolta, gere um JSON numérico puramente válido."
+        "Você é um Produtor de Vídeos Curtos Viral especialista em retenção para TikTok e Instagram Reels. "
+        "Sua missão é transformar a transcrição abaixo em CLIPES DE ALTO IMPACTO.\n\n"
+        "REGRAS DE ANÁLISE:\n"
+        "1. IDENTIFICAÇÃO DE DESTAQUES: Busque momentos impactantes, controversos, inspiradores ou educativos. O corte deve conter uma 'pepita de ouro'.\n"
+        "2. GANCHO INICIAL (0-3 segundos): O clipe deve começar IMEDIATAMENTE com uma frase forte ou pico emocional. Sem introduções lentas.\n"
+        "3. DURAÇÃO: O clipe deve ter entre 15 a 60 segundos de duração.\n"
+        "4. FLOW: O corte deve ser um segmento contínuo e coerente que faça sentido sozinho.\n\n"
+        "REGRAS DE SAÍDA:\n"
+        "1. Retorne EXATAMENTE e APENAS no formato JSON.\n"
+        "2. Campos: 'title' (Clickbait), 'start_quote' (primeiras 5 palavras EXATAS), 'end_quote' (últimas 5 palavras EXATAS).\n"
+        "3. Selecione os " + str(num_clips) + " melhores momentos."
     )
     
     try:
