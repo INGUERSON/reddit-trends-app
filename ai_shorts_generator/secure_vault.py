@@ -2,8 +2,8 @@ import os
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv, set_key
 
-# Caminho para a chave mestra
-KEY_FILE = "master.key"
+# Caminho absoluto para a chave mestra (sempre no mesmo local que este script)
+KEY_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "master.key")
 
 def generate_key():
     """Gera uma chave de criptografia e salva em um arquivo."""

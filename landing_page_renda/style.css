@@ -76,6 +76,11 @@ nav {
     color: #fff;
 }
 
+.nav-link-secondary {
+    opacity: 0.6;
+    font-size: 0.8rem;
+}
+
 .btn-nav {
     padding: 0.6rem 1.2rem;
     background: rgba(0, 240, 255, 0.1);

@@ -77,12 +77,31 @@ def post_to_instagram(video_path, caption, comment):
         return False
         
     try:
+        # Sanitização: Remove @ se o usuário tiver colocado no .env
+        if username.startswith("@"):
+            username = username[1:]
+            
         print(f"📱 Autenticando no Instagram como: {username}...")
         cl = Client()
-        # Para evitar blocks ao logar repetidamente em IPs diferentes:
-        # cl.delay_range = [1, 3] # define delays de humano
-        cl.login(username, password)
         
+        # Gerenciamento de Sessão para evitar blocks
+        session_file = "instagram_session.json"
+        if os.path.exists(session_file):
+            print("📦 Carregando sessão existente...")
+            try:
+                cl.load_settings(session_file)
+                # Tenta validar se a sessão ainda está ativa
+                cl.get_timeline_feed()
+                print("✅ Sessão válida carregada.")
+            except Exception:
+                print("⚠️ Sessão expirada ou inválida. Realizando login completo...")
+                cl.login(username, password)
+                cl.dump_settings(session_file)
+        else:
+            cl.login(username, password)
+            cl.dump_settings(session_file)
+            print("✅ Nova sessão salva.")
+
         print(f"🚀 Fazendo Upload do Reels ({os.path.basename(video_path)})... Isso pode demorar.")
         media = cl.clip_upload(
             video_path, 
@@ -101,6 +120,9 @@ def post_to_instagram(video_path, caption, comment):
         return True
     except Exception as e:
         print(f"❌ Erro ao postar no Instagram: {e}")
+        # Se falhou e tinha sessão, tenta deletar a sessão pra forçar login na próxima
+        if os.path.exists("instagram_session.json"):
+            os.remove("instagram_session.json")
         return False
 
 def post_to_tiktok(video_path, caption):
@@ -137,8 +159,14 @@ def auto_publish(video_paths, niche, lang="pt"):
     print("\n✅ PROCESSO DE PUBLICAÇÃO CONCLUÍDO!")
 
 if __name__ == "__main__":
-    test_vid = "output/Clip_01.mp4"
-    if os.path.exists(test_vid):
-        auto_publish([test_vid], "Inteligência Artificial")
+    # Teste de carga: encontra o vídeo mais recente na pasta output
+    import glob
+    output_videos = glob.glob("output/*.mp4")
+    
+    if output_videos:
+        # Pega o mais recente
+        latest_vid = max(output_videos, key=os.path.getctime)
+        print(f"🎬 Vídeo para teste encontrado: {latest_vid}")
+        auto_publish([latest_vid], "Inteligência Artificial")
     else:
-        print(f"Crie um vídeo em {test_vid} para testar diretamente.")
+        print(f"❌ Nenhum vídeo encontrado na pasta 'output'.")

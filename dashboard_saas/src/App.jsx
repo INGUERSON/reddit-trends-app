@@ -37,8 +37,8 @@ function App() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('Todos');
   const [selectedLead, setSelectedLead] = useState(null);
-  const [leads, setLeads] = useState(INITIAL_LEADS);
-  const [finance, setFinance] = useState({ disponivel: 0, pendente: 0, total: 0, transacoes: [] });
+  const [leads, _setLeads] = useState(INITIAL_LEADS);
+  const [finance, _setFinance] = useState({ disponivel: 0, pendente: 0, total: 0, transacoes: [] });
   const [botsActive, setBotsActive] = useState({ b2b: true, reddit: true, shorts: false });
   const [logs, setLogs] = useState([
     { type: 'info', text: 'Sistemas LindaOS v2.0 carregados...' },
