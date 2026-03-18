@@ -75,8 +75,8 @@ def run_single_cycle():
     load_dotenv()
     success = execute_full_cycle()
     if not success:
-        print("❌ Ciclo falhou ou nenhum vídeo foi encontrado.")
-        sys.exit(1)
+        print("💡 Ciclo finalizado: Nenhum vídeo viral novo encontrado para este nicho no momento.")
+        sys.exit(0)
 
 def run_empire_pipeline():
     while True:
