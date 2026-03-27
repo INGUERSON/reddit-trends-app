@@ -51,13 +51,19 @@ def make_text_clip(text, duration, max_width, fontsize=85, color="white"):
     img_array = np.array(img)
     return ImageClip(img_array).set_duration(duration)
 
-def edit_and_render_clip(video_path, audio_path, start_time, end_time, words_data, output_filename):
+def edit_and_render_clip(video_path, audio_path, start_time, end_time, words_data, output_filename, is_already_cut=False):
     print(f"🎬 Iniciando edição do trecho: {start_time}s até {end_time}s...")
     
     # 1. Carrega o vídeo original e junta o áudio extraído (garante 1080p sem mute)
     try:
-        video = VideoFileClip(video_path).subclip(start_time, end_time)
-        audio = AudioFileClip(audio_path).subclip(start_time, end_time)
+        if is_already_cut:
+            # Vídeo já veio recortado do download (TURBO MODE)
+            video = VideoFileClip(video_path)
+            # Mas o áudio geral ainda é o mestre, então fazemos subclip do áudio
+            audio = AudioFileClip(audio_path).subclip(start_time, end_time)
+        else:
+            video = VideoFileClip(video_path).subclip(start_time, end_time)
+            audio = AudioFileClip(audio_path).subclip(start_time, end_time)
         
         # Otimização de Áudio: Normalização de volume para clareza
         from moviepy.audio.fx.all import audio_normalize
