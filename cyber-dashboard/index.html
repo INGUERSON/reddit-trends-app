@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberAnalytics | Dashboard de Segurança</title>
+    
+    <!-- CSP: Content Security Policy - Defesa Avançada contra Injeções de Script (XSS/Magecart) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https://ui-avatars.com; connect-src 'self' http://localhost:8000;">
+
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    
+    <!-- Custom JS -->
+    <script src="js/app.js" defer></script>
+</head>
+<body class="light-theme">
+    <div class="dashboard-wrapper">
+        <!-- Menu Lateral -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>CyberAnalytics</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <ul>
+                    <li class="active menu-item" data-target="sec-dashboard"><a href="#"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                    <li class="menu-item" data-target="sec-traffic"><a href="#"><i class="fa-solid fa-network-wired"></i> Tráfego</a></li>
+                    <li class="menu-item" data-target="sec-threats"><a href="#"><i class="fa-solid fa-bug"></i> Ameaças</a></li>
+                    <li class="menu-item" data-target="sec-servers"><a href="#"><i class="fa-solid fa-server"></i> Servidores</a></li>
+                    <li class="menu-item" data-target="sec-reports"><a href="#"><i class="fa-regular fa-file-lines"></i> Relatórios</a></li>
+                </ul>
+                
+                <div class="nav-section-title">Opções</div>
+                <ul>
+                    <li><a href="#"><i class="fa-solid fa-gear"></i> Configurações</a></li>
+                    <li><a href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Cabeçalho -->
+            <header class="topbar">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Buscar IPs, incidentes ou logs...">
+                </div>
+                
+                <div class="user-profile">
+                    <button class="notification-btn">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="badge" id="notification-badge">0</span>
+                    </button>
+                    <div class="avatar">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0d6efd&color=fff" alt="User">
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTAINER SPA (Single Page Application) -->
+            <div id="spa-container">
+                <!-- ================= ABAS 1: DASHBOARD ================= -->
+                <section id="sec-dashboard" class="content-section active">
+                    <!-- Cards de Resumo -->
+                    <div class="metrics-grid">
+                <div class="metric-card fade-in">
+                    <div class="metric-icon blue"><i class="fa-solid fa-wave-square"></i></div>
+                    <div class="metric-info">
+                        <h3>Total de Eventos</h3>
+                        <h2 id="metric-total-events">Carregando...</h2>
+                    </div>
+                </div>
+                <div class="metric-card fade-in delay-1">
+                    <div class="metric-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="metric-info">
+                        <h3>Anomalias Detectadas</h3>
+                        <h2 id="metric-anomalies">Carregando...</h2>
+                    </div>
+                </div>
+                <div class="metric-card fade-in delay-2">
+                    <div class="metric-icon yellow"><i class="fa-solid fa-biohazard"></i></div>
+                    <div class="metric-info">
+                        <h3>Nível de Ameaça Global</h3>
+                        <h2 id="metric-threat-level">Carregando...</h2>
+                    </div>
+                </div>
+                <div class="metric-card fade-in delay-3">
+                    <div class="metric-icon green"><i class="fa-solid fa-check-double"></i></div>
+                    <div class="metric-info">
+                        <h3>Incidentes Resolvidos</h3>
+                        <h2 id="metric-resolved">Carregando...</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-grid">
+                <div class="chart-card fade-in delay-4">
+                    <div class="card-header">
+                        <h2>Análise de Tráfego de Rede (Tempo Real)</h2>
+                        <button class="btn-icon"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trafficChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card fade-in delay-5">
+                    <div class="card-header">
+                        <h2>Distribuição de Ameaças</h2>
+                        <button class="btn-icon"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="threatsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Logs Recentes -->
+            <div class="table-card fade-in delay-6">
+                <div class="card-header">
+                    <h2>Últimos Logs Analisados</h2>
+                    <a href="#" class="view-all">Ver Histórico Completo</a>
+                </div>
+                <div class="table-responsive">
+                    <table id="logsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Endereço IP</th>
+                                <th>Evento Identificado</th>
+                                <th>Severidade</th>
+                                <th>Status</th>
+                                <th>Horário</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Preenchido via JavaScript -->
+                            <tr><td colspan="6" style="text-align: center;">Carregando dados da API PHP...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </section>
+
+                <!-- ================= ABAS 2: TRÁFEGO ================= -->
+                <section id="sec-traffic" class="content-section hidden">
+                    <div class="card-header">
+                        <h2>Detalhamento de Tráfego de Rede</h2>
+                    </div>
+                    <div class="table-card fade-in">
+                        <p>Interface de tráfego aprofundada (Módulo em construção para V3)...</p>
+                    </div>
+                </section>
+
+                <!-- ================= ABAS 3: AMEAÇAS ================= -->
+                <section id="sec-threats" class="content-section hidden">
+                    <div class="card-header">
+                        <h2>Radar de Ameaças Globais</h2>
+                    </div>
+                    <div class="table-card fade-in">
+                        <p>Painel de isolamento e core forense (Módulo em construção para V3)...</p>
+                    </div>
+                </section>
+
+                <!-- ================= ABAS 4: SERVIDORES ================= -->
+                <section id="sec-servers" class="content-section hidden">
+                    <div class="card-header">
+                        <h2>Status dos Servidores</h2>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-card fade-in">
+                            <div class="metric-icon green"><i class="fa-solid fa-server"></i></div>
+                            <div class="metric-info">
+                                <h3>DB-Main (PostgreSQL)</h3>
+                                <h2>Online (99.9%)</h2>
+                            </div>
+                        </div>
+                        <div class="metric-card fade-in delay-1">
+                            <div class="metric-icon red"><i class="fa-solid fa-server"></i></div>
+                            <div class="metric-info">
+                                <h3>API-Gateway</h3>
+                                <h2>Sob Ataque (DDoS)</h2>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= ABAS 5: RELATÓRIOS ================= -->
+                <section id="sec-reports" class="content-section hidden">
+                    <div class="card-header">
+                        <h2>Relatórios Consolidados</h2>
+                    </div>
+                    <div class="table-card fade-in">
+                        <p>Geração de PDF e auditorias (Módulo em construção para V3)...</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

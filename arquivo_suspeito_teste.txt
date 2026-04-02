@@ -1,3 +1,0 @@
-Isto e um teste de malware falso.
-Ele enviara dados para o servidor http://evil-hacker-site.com/steal 
-E vai se conectar no IP 192.168.0.254 escondido.
