@@ -35,16 +35,20 @@ def execute_full_cycle():
     idioma = escolha["lang"]
     print(f"Nicho do Ciclo: {nicho.upper()} ({idioma})")
 
-    video_url = hunt_viral_videos(nicho, max_results=5)
+    result = hunt_viral_videos(nicho, max_results=5)
 
-    if not video_url:
+    if not result:
         print("Nenhum video viral encontrado para este nicho.")
         return False
 
-    print(f"Alvo Localizado: {video_url}")
+    if isinstance(result, dict):
+        print(f"Video: {result.get('video_url', '')[:70]}")
+        print(f"Audio: {result.get('audio_url', '')[:70]}")
+    else:
+        print(f"Alvo Localizado: {result}")
 
     try:
-        generated_clips = factory_main(url=video_url)
+        generated_clips = factory_main(url=result)
     except Exception as e:
         print(f"Erro na Fabrica de Cortes: {e}")
         import traceback

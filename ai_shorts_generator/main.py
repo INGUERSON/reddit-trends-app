@@ -1,7 +1,7 @@
 import os
 import sys
 
-from download_video import download_youtube_video
+from download_video import download_dual_source, download_youtube_video
 from transcribe_and_clip import transcribe_audio_with_words, identify_viral_clips, align_clip_timestamps
 from video_editor import edit_and_render_clip
 
@@ -11,7 +11,7 @@ def main(url=None):
     print("AI SHORTS GENERATOR (Videos Curtos Virais)")
     print("========================================\n")
 
-    # 1. Obter link do usuario (ou por argumento ou por input)
+    # url pode ser string ou dict {"video_url": ..., "audio_url": ...}
     if not url:
         if len(sys.argv) > 1:
             url = sys.argv[1].strip()
@@ -23,13 +23,22 @@ def main(url=None):
         print("Nenhum link fornecido. Encerrando.")
         return []
 
-    # 2. Download (Video e Audio separado)
-    video_path, audio_path = download_youtube_video(url, output_path="downloads")
+    # Determina se e dual-fonte ou URL simples
+    if isinstance(url, dict):
+        video_url = url.get("video_url", "")
+        audio_url = url.get("audio_url", video_url)
+        print(f"Video source: {video_url[:60]}...")
+        print(f"Audio source: {audio_url[:60]}...")
+        video_path, audio_path = download_dual_source(video_url, audio_url, output_path="downloads")
+    else:
+        # URL simples - tenta YouTube completo
+        video_path, audio_path = download_youtube_video(url, output_path="downloads")
+
     if not video_path or not audio_path:
         print("Falha no download. Encerrando.")
         return []
 
-    # 3. Transcrever e pegar os timestamps de cada palavra
+    # Transcrever audio com Whisper
     transcript_text, words_data = transcribe_audio_with_words(audio_path)
     if not transcript_text:
         print("Falha na transcricao. Encerrando.")
@@ -37,13 +46,13 @@ def main(url=None):
 
     print(f"\nTranscricao gerou {len(words_data)} palavras.")
 
-    # 4. Pedir pro GPT-4o cacar os melhores momentos
+    # GPT-4o identifica momentos virais
     raw_clips = identify_viral_clips(transcript_text, num_clips=3)
     if not raw_clips:
         print("A IA nao encontrou trechos bons o suficiente. Encerrando.")
         return []
 
-    # 5. Alinhar o texto gerado pelo GPT com o timestamp fisico exato do Whisper
+    # Alinha timestamps exatos
     print("Alinhando os tempos de corte exatos com o video...")
     final_clips = align_clip_timestamps(raw_clips, words_data)
 
@@ -53,9 +62,7 @@ def main(url=None):
 
     print(f"Foram validados {len(final_clips)} trechos exatos para edicao!")
 
-    # 6. Para cada trecho, rodar o MoviePy e renderizar
-    if not os.path.exists("output"):
-        os.makedirs("output")
+    os.makedirs("output", exist_ok=True)
 
     generated_videos = []
     for i, clip in enumerate(final_clips, 1):
@@ -77,11 +84,11 @@ def main(url=None):
         )
 
         if success:
-            print(f"Finalizado e salvo na pasta output: {output_file}")
+            print(f"Finalizado e salvo: {output_file}")
             generated_videos.append(output_file)
 
     print("\nPROCESSO DE CRIACAO ENCERRADO")
-    print("Verifique a pasta 'output' para postar seus novos videos verticais.")
+    print(f"Total de clips gerados: {len(generated_videos)}")
 
     return generated_videos
 
