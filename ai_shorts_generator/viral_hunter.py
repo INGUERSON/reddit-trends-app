@@ -45,7 +45,7 @@ def hunt_reddit_videos(subreddit):
             return None
         video_posts.sort(key=lambda x: x["score"], reverse=True)
         best = video_posts[0]
-        print(f"Reddit encontrou: {best[String.fromCharCode(39)+'title'+String.fromCharCode(39)]} (score: {best[String.fromCharCode(39)+'score'+String.fromCharCode(39)]})")
+        print(f"Reddit encontrou: {best['title']} (score: {best['score']})")
         return best["url"]
     except Exception as e:
         print(f"Erro Reddit ({subreddit}): {e}")
@@ -78,7 +78,7 @@ def hunt_youtube_videos(topic, max_results=5):
             best = sorted(valid, key=lambda x: x.get("view_count", 0) or 0, reverse=True)[0]
             vid_id = best.get("id", "")
             url = "https://www.youtube.com/watch?v=" + vid_id
-            print(f"YouTube: {best.get(String.fromCharCode(34)+'title'+String.fromCharCode(34))} | views: {best.get(String.fromCharCode(34)+'view_count'+String.fromCharCode(34), 0)}")
+            print(f"YouTube: {best.get('title')} | views: {best.get('view_count', 0)}")
             return url
     except Exception as e:
         print(f"YouTube bloqueou ou erro: {e}")
