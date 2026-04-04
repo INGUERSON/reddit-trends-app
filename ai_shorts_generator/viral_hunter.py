@@ -25,23 +25,33 @@ def hunt_pexels_video(topic):
     Busca videos no Pexels (API publica, sem bloqueio de cloud IPs).
     Requer PEXELS_API_KEY no GitHub Secrets.
     """
+    import requests as req_lib
+
     api_key = os.getenv("PEXELS_API_KEY")
     if not api_key:
         print("PEXELS_API_KEY nao configurada. Pulando Pexels.")
         return None
 
+    print(f"Pexels key detectada: {api_key[:8]}... ({len(api_key)} chars)")
+
     queries = PEXELS_QUERIES.get(topic, ["motivation", "success", "business"])
     query = random.choice(queries)
     print(f"Buscando no Pexels: '{query}'")
 
-    encoded_query = urllib.parse.quote(query)
-    url = f"https://api.pexels.com/videos/search?query={encoded_query}&per_page=10&min_duration=60"
+    url = "https://api.pexels.com/videos/search"
+    headers = {
+        "Authorization": api_key,
+        "User-Agent": "Mozilla/5.0",
+    }
+    params = {"query": query, "per_page": 10, "min_duration": 60}
 
     try:
-        req = urllib.request.Request(url, headers={"Authorization": api_key})
-        with urllib.request.urlopen(req, timeout=15) as response:
-            data = json.loads(response.read().decode())
-
+        response = req_lib.get(url, headers=headers, params=params, timeout=15)
+        print(f"Pexels status: {response.status_code}")
+        if response.status_code != 200:
+            print(f"Pexels erro body: {response.text[:300]}")
+            return None
+        data = response.json()
         videos = data.get("videos", [])
         if not videos:
             print("Nenhum video encontrado no Pexels.")
