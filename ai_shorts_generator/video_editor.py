@@ -33,57 +33,43 @@ def make_text_clip(text, duration, max_width, fontsize=85, color="white"):
     clip = ImageClip(img_np).set_duration(duration)
     return clip
 
-def process_video_with_subs(video_path, clips_data, words_data, output_folder="outputs"):
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+def edit_and_render_clip(video_path, audio_path, start_time, end_time, words_data, output_filename):
+    print(f"Renderizando trecho: {start_time}s ate {end_time}s")
+    try:
+        main_video = VideoFileClip(video_path)
+        w, h = main_video.size
         
-    generated_files = []
-    
-    print(f"Iniciando Renderizacao Heavy Metal: {video_path}")
-    main_video = VideoFileClip(video_path)
-    w, h = main_video.size
-    
-    target_ratio = 9/16
-    current_ratio = w/h
-    
-    if current_ratio > target_ratio:
-        new_w = h * target_ratio
-        video_cropped = crop(main_video, x_center=w/2, width=new_w, height=h)
-    else:
-        new_h = w / target_ratio
-        video_cropped = crop(main_video, y_center=h/2, width=w, height=new_h)
+        target_ratio = 9/16
+        current_ratio = w/h
         
-    video_cropped = video_cropped.resize(height=1920)
-    final_w, final_h = video_cropped.size
-    
-    for i, clip in enumerate(clips_data):
-        start_t = clip['start_time']
-        end_t = clip['end_time']
+        if current_ratio > target_ratio:
+            new_w = h * target_ratio
+            video_cropped = crop(main_video, x_center=w/2, width=new_w, height=h)
+        else:
+            new_h = w / target_ratio
+            video_cropped = crop(main_video, y_center=h/2, width=w, height=new_h)
+            
+        video_cropped = video_cropped.resize(height=1920).subclip(start_time, end_time)
+        final_w, final_h = video_cropped.size
         
-        print(f"Cortando Clipe {i+1}: {start_t}s ate {end_t}s")
-        sub_video = video_cropped.subclip(start_t, end_t)
-        
-        clip_words = [w for w in words_data if w['start'] >= start_t and w['end'] <= end_t]
+        clip_words = [w for w in words_data if w['start'] >= start_time and w['end'] <= end_time]
         
         subtitle_clips = []
-        for j, word in enumerate(clip_words):
-            t_start = word['start'] - start_t
-            if j < len(clip_words) - 1:
-                t_end = clip_words[j+1]['start'] - start_t
+        for i, word in enumerate(clip_words):
+            t_start = word['start'] - start_time
+            if i < len(clip_words) - 1:
+                t_end = clip_words[i+1]['start'] - start_time
             else:
-                t_end = word['end'] - start_t
+                t_end = word['end'] - start_time
                 
             word_text = word['word'].upper()
             txt_clip = make_text_clip(word_text, t_end - t_start, final_w - 100)
             txt_clip = txt_clip.set_start(t_start).set_position(('center', 1400))
             subtitle_clips.append(txt_clip)
             
-        final_clip = CompositeVideoClip([sub_video] + subtitle_clips)
+        final_video = CompositeVideoClip([video_cropped] + subtitle_clips)
         
-        output_filename = os.path.join(output_folder, f"clip_{i}_{os.path.basename(video_path)}")
-        print(f"Exportando: {output_filename}")
-        
-        final_clip.write_videofile(
+        final_video.write_videofile(
             output_filename,
             codec="libx264",
             audio_codec="aac",
@@ -92,7 +78,8 @@ def process_video_with_subs(video_path, clips_data, words_data, output_folder="o
             threads=4,
             logger=None
         )
-        generated_files.append(output_filename)
-        
-    main_video.close()
-    return generated_files
+        main_video.close()
+        return True
+    except Exception as e:
+        print(f"Erro na renderizacao: {e}")
+        return False
