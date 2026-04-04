@@ -5,53 +5,54 @@ import traceback
 import random
 
 def hunt_viral_videos(topic_or_url, is_profile=False, max_results=5):
-      print(f"Iniciando Cacada Viral: '{topic_or_url}'")
-      if not is_profile and not topic_or_url.startswith('http'):
-                search_query = f"ytsearch{max_results}:{topic_or_url} podcast"
-else:
+    print(f"Iniciando Cacada Viral: '{topic_or_url}'")
+    if not is_profile and not topic_or_url.startswith('http'):
+        search_query = f"ytsearch{max_results}:{topic_or_url} podcast"
+    else:
         search_query = topic_or_url
 
     ydl_opts = {
-              'extract_flat': True,
-              'quiet': True,
-              'no_warnings': True,
-              'playlistend': max_results,
+        'extract_flat': True,
+        'quiet': True,
+        'no_warnings': True,
+        'playlistend': max_results,
     }
 
     results = []
     try:
-              with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                            print(f"Varrendo a rede: {search_query}...")
-                            info = ydl.extract_info(search_query, download=False)
-                            if 'entries' in info:
-                                              for entry in info['entries']:
-                                                                    if entry:
-                                                                                              results.append({
-                                                                                                                            'id': entry.get('id'),
-                                                                                                                            'title': entry.get('title'),
-                                                                                                                            'url': entry.get('url') if entry.get('url') else f"https://www.youtube.com/watch?v={entry.get('id')}",
-                                                                                                                            'view_count': entry.get('view_count', 0),
-                                                                                                                            'duration': entry.get('duration', 0)
-                                                                                                })
-                            else:
-                                              results.append({
-                                                                    'id': info.get('id'),
-                                                                    'title': info.get('title'),
-                                                                    'url': info.get('webpage_url', topic_or_url),
-                                                                    'view_count': info.get('view_count', 0),
-                                                                    'duration': info.get('duration', 0)
-                                              })
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            print(f"Varrendo a rede: {search_query}...")
+            info = ydl.extract_info(search_query, download=False)
+            if 'entries' in info:
+                for entry in info['entries']:
+                    if entry:
+                        results.append({
+                            'id': entry.get('id'),
+                            'title': entry.get('title'),
+                            'url': entry.get('url') if entry.get('url') else f"https://www.youtube.com/watch?v={entry.get('id')}",
+                            'view_count': entry.get('view_count', 0),
+                            'duration': entry.get('duration', 0)
+                        })
+            else:
+                results.append({
+                    'id': info.get('id'),
+                    'title': info.get('title'),
+                    'url': info.get('webpage_url', topic_or_url),
+                    'view_count': info.get('view_count', 0),
+                    'duration': info.get('duration', 0)
+                })
     except Exception as e:
-              print(f"Erro ao cacar videos: {e}")
-              traceback.print_exc()
-              return None
+        print(f"Erro ao cacar videos: {e}")
+        traceback.print_exc()
+        return None
 
     valid_videos = [v for v in results if v.get('duration') and v['duration'] > 300]
     if not valid_videos:
-              valid_videos = results
-          if not valid_videos:
-                    print("Nenhum video valido encontrado.")
-                    return None
+        valid_videos = results
+    
+    if not valid_videos:
+        print("Nenhum video valido encontrado.")
+        return None
 
     valid_videos.sort(key=lambda x: x.get('view_count') or 0, reverse=True)
     best_video = valid_videos[0]
@@ -59,7 +60,7 @@ else:
     return best_video['url']
 
 def feed_video_to_pipeline(video_url):
-      input_file = "input.txt"
-      with open(input_file, 'w', encoding='utf-8') as f:
-                f.write(video_url)
-            print(f"Video alimentado na Fabrica de Cortes ({input_file}).")
+    input_file = "input.txt"
+    with open(input_file, 'w', encoding='utf-8') as f:
+        f.write(video_url)
+    print(f"Video alimentado na Fabrica de Cortes ({input_file}).")
