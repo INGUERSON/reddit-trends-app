@@ -12,83 +12,71 @@ from auto_poster import auto_publish
 load_dotenv()
 
 def execute_full_cycle():
-      print("\n" + "="*54)
-      print("AUTO-CASH EMPIRE: INICIANDO NOVO CICLO")
-      print("="*54 + "\n")
+          print("\n" + "="*54)
+          print("AUTO-CASH EMPIRE: INICIANDO NOVO CICLO")
+          print("="*54 + "\n")
 
     niches = [
-              {"name": "marketing digital", "lang": "pt"},
-              {"name": "renda extra e sucesso financeiro", "lang": "pt"},
-              {"name": "tecnologia e inteligencia artificial", "lang": "pt"},
-              {"name": "empreendedorismo e negocios", "lang": "pt"},
-              {"name": "podcast de cortes milionarios", "lang": "pt"},
-              {"name": "AI and future technology", "lang": "en"},
-              {"name": "Success mindset and money", "lang": "en"},
-              {"name": "Joe Rogan powerful clips", "lang": "en"},
-              {"name": "Andrew Huberman health tips", "lang": "en"},
-              {"name": "Business scale and automation", "lang": "en"},
-              {"name": "Luxury lifestyle and jets", "lang": "en"}
+                  {"name": "marketing digital", "lang": "pt"},
+                  {"name": "renda extra e sucesso financeiro", "lang": "pt"},
+                  {"name": "tecnologia e inteligencia artificial", "lang": "pt"},
+                  {"name": "empreendedorismo e negocios", "lang": "pt"},
+                  {"name": "podcast de cortes milionarios", "lang": "pt"},
     ]
 
-    selected = random.choice(niches)
-    nicho_escolhido = selected["name"]
-    idioma = selected["lang"]
-    print(f"Iniciando cacada GLOBAL no sub-nicho: '{nicho_escolhido}' ({idioma})")
+    # Shuffle para diversificar
+    random.shuffle(niches)
 
-    url_viral = hunt_viral_videos(nicho_escolhido, is_profile=False, max_results=10)
-    if not url_viral:
-              print("Nenhum video encontrado.")
-              return False
+    found_any = False
+    for niche in niches:
+                  print(f"BUSCANDO VIRAL PARA NICHE: {niche['name'].upper()}")
 
-    print(f"ALIMENTANDO FABRICA DE IA COM: {url_viral}")
+        # 1. Cacar video viral
+                  video_url = hunt_viral_videos(niche['name'], lang=niche['lang'])
 
-    try:
-              generated_clips = factory_main(url=url_viral)
-except Exception as e:
-          print(f"Erro Critico na Fabrica de Edicao: {e}")
-          return False
+        if video_url:
+                          print(f"VIDEO VIRAL ENCONTRADO: {video_url}")
 
-    if not generated_clips:
-              print("A fabrica de edicao falhou.")
-              return False
+            # 2. Gerar o clipe usando a factory do main.py
+                          output_videos = factory_main(video_url)
 
-    print(f"Fabrica concluiu a renderizacao de {len(generated_clips)} clipes verticais!")
+            if output_videos:
+                                  found_any = True
+                                  print(f"CLIPES GERADOS: {len(output_videos)}")
 
-    try:
-              auto_publish(generated_clips, nicho_escolhido, lang=idioma)
-except Exception as e:
-          print(f"Erro Critico durante a Publicacao: {e}")
+                # 3. Postar no Instagram
+                                  for video_path in output_videos:
+                                                            success = auto_publish(video_path, caption=f"Viralizando o nicho de {niche['name']}! #viral #shorts #ai")
+                                                            if success:
+                                                                                          print(f"POSTADO COM SUCESSO: {video_path}")
+            else:
+                        print(f"FALHA AO POSTAR: {video_path}")
 
-    print("\n" + "="*54)
-    print("CICLO COMPLETO FINALIZADO. IMPERIO EM EXPANSAO.")
-    print("="*54 + "\n")
-    return True
+                                  # Pausa entre postagens se houver mais de uma
+                                  time.sleep(30)
+
+            # Sair do loop de nichos apos encontrar um (um ciclo = um viral processado)
+            break
+else:
+            print(f"Nada de novo em {niche['name']}. Mudando de nicho...")
+            time.sleep(5)
+
+    return found_any
 
 def run_single_cycle():
-      """Usado pelo GitHub Actions para rodar apenas uma vez"""
-      load_dotenv()
-      success = execute_full_cycle()
-      if not success:
-                print("Ciclo finalizado: Nenhum video viral novo encontrado.")
-                sys.exit(0)
+          """Usado pelo GitHub Actions para rodar apenas uma vez"""
+    load_dotenv()
+    success = execute_full_cycle()
+    if not success:
+                  print("Ciclo finalizado: Nenhum video viral novo encontrado.")
+        sys.exit(0)
 
-  def run_empire_pipeline():
-        while True:
-                  success = execute_full_cycle()
-                  if not success:
-                                print("Tentando novamente em 1 hora...")
-                                time.sleep(3600)
-                                continue
-                            interval_hours = 10
-                  next_post_time = datetime.now() + timedelta(hours=interval_hours)
-                  print(f"Proximo post agendado para: {next_post_time.strftime('%H:%M:%S')}")
-                  for hour in range(interval_hours, 0, -1):
-                                print(f"Horas restantes: {hour}h")
-                                time.sleep(3600)
-
-          if __name__ == "__main__":
-                if not os.getenv("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY") == "sua_chave_aqui":
-                          print("ALERTA: OPENAI_API_KEY nao encontrada no .env!")
-                          sys.exit(1)
-                      print("Modulo Escalonador Iniciado: Postagens a cada 10 horas.")
-    run_empire_pipeline()
+if __name__ == "__main__":
+          # Se rodar localmente sem argumentos, roda em loop eterno
+          print("INICIANDO EMPIRE PIPELINE EM MODO LOOP...")
+    while True:
+                  execute_full_cycle()
+        wait_time = random.randint(3600, 7200) # Espera entre 1 e 2 horas
+        next_run = datetime.now() + timedelta(seconds=wait_time)
+        print(f"Ciclo finalizado. Proxima execucao em: {next_run.strftime('%H:%M:%S')}")
+        time.sleep(wait_time)
