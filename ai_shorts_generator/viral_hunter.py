@@ -23,7 +23,11 @@ YOUTUBE_QUERIES = {
     "renda extra e sucesso financeiro": "sucesso financeiro podcast motivacional",
     "tecnologia e inteligencia artificial": "inteligencia artificial futuro podcast",
     "empreendedorismo e negocios": "empreendedorismo negocios podcast brasileiro",
+<<<<<<< HEAD
     "podcast de cortes milionarios": "flavio augusto pablo marçal cortes podcast",
+=======
+    "podcast de cortes milionarios": "flavio augusto pablo marcal cortes podcast",
+>>>>>>> 1930d1903f5c86ef1395b6779b61786005ff56bb
     "AI and future technology": "artificial intelligence future podcast English",
     "Success mindset and money": "millionaire mindset success podcast motivational",
     "Joe Rogan powerful clips": "joe rogan podcast motivational speech clips",
@@ -32,10 +36,13 @@ YOUTUBE_QUERIES = {
 
 
 def hunt_pexels_background(topic):
+<<<<<<< HEAD
     """
     Baixa um video de fundo do Pexels (sem fala, apenas visual).
     Retorna a URL direta do arquivo MP4.
     """
+=======
+>>>>>>> 1930d1903f5c86ef1395b6779b61786005ff56bb
     import requests as req_lib
 
     api_key = os.getenv("PEXELS_API_KEY")
@@ -65,18 +72,28 @@ def hunt_pexels_background(topic):
             print("Nenhum video de fundo encontrado no Pexels.")
             return None
 
+<<<<<<< HEAD
         # Prefere HD (1080p) para economizar espaco e tempo
         videos.sort(key=lambda x: x.get("duration", 0), reverse=True)
         for vid in videos:
             files = vid.get("video_files", [])
             # Filtra arquivos com resolucao 1080p ou menor
+=======
+        videos.sort(key=lambda x: x.get("duration", 0), reverse=True)
+        for vid in videos:
+            files = vid.get("video_files", [])
+>>>>>>> 1930d1903f5c86ef1395b6779b61786005ff56bb
             hd_files = [f for f in files if f.get("height", 9999) <= 1080 and f.get("height", 0) >= 720]
             if not hd_files:
                 hd_files = files
             hd_files.sort(key=lambda x: x.get("width", 0), reverse=True)
             if hd_files:
                 video_url = hd_files[0].get("link", "")
+<<<<<<< HEAD
                 print(f"Pexels background encontrado: {vid.get('duration')}s ({hd_files[0].get('width')}x{hd_files[0].get('height')})")
+=======
+                print(f"Pexels background: {vid.get('duration')}s ({hd_files[0].get('width')}x{hd_files[0].get('height')})")
+>>>>>>> 1930d1903f5c86ef1395b6779b61786005ff56bb
                 return video_url
 
     except Exception as e:
@@ -85,10 +102,13 @@ def hunt_pexels_background(topic):
 
 
 def hunt_youtube_speech(topic, max_results=5):
+<<<<<<< HEAD
     """
     Busca no YouTube um podcast/fala para usar como fonte de audio/transcricao.
     Retorna apenas a URL (sem download).
     """
+=======
+>>>>>>> 1930d1903f5c86ef1395b6779b61786005ff56bb
     yt_query = YOUTUBE_QUERIES.get(topic, f"{topic} podcast motivacional")
     search_query = f"ytsearch{max_results}:{yt_query}"
     print(f"Buscando fala YouTube: '{yt_query}'")
@@ -116,7 +136,10 @@ def hunt_youtube_speech(topic, max_results=5):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(search_query, download=False)
             entries = info.get("entries", [])
+<<<<<<< HEAD
             # Filtra videos longos (podcasts tem mais conteudo)
+=======
+>>>>>>> 1930d1903f5c86ef1395b6779b61786005ff56bb
             valid = [e for e in entries if e and e.get("duration", 0) > 300]
             if not valid:
                 valid = [e for e in entries if e]
@@ -132,6 +155,7 @@ def hunt_youtube_speech(topic, max_results=5):
 
 
 def hunt_viral_videos(topic_or_url, is_profile=False, max_results=5):
+<<<<<<< HEAD
     """
     Funcao principal. Retorna um dict com:
       - video_url: URL do video de fundo (Pexels ou YouTube)
@@ -139,6 +163,8 @@ def hunt_viral_videos(topic_or_url, is_profile=False, max_results=5):
     
     Se URL direta fornecida: usa ela para ambos.
     """
+=======
+>>>>>>> 1930d1903f5c86ef1395b6779b61786005ff56bb
     if is_profile or topic_or_url.startswith("http"):
         print(f"URL direta: {topic_or_url}")
         return {"video_url": topic_or_url, "audio_url": topic_or_url}
@@ -147,12 +173,18 @@ def hunt_viral_videos(topic_or_url, is_profile=False, max_results=5):
     print(f"CACADA DUAL-FONTE: '{topic_or_url}'")
     print(f"{'='*50}")
 
+<<<<<<< HEAD
     # Fonte 1: Pexels para background visual
     pexels_url = hunt_pexels_background(topic_or_url)
 
     # Fonte 2: YouTube para fala/audio
     yt_url = hunt_youtube_speech(topic_or_url, max_results)
 
+=======
+    pexels_url = hunt_pexels_background(topic_or_url)
+    yt_url = hunt_youtube_speech(topic_or_url, max_results)
+
+>>>>>>> 1930d1903f5c86ef1395b6779b61786005ff56bb
     if pexels_url and yt_url:
         print(f"Dual-fonte: Pexels (visual) + YouTube (audio)")
         return {"video_url": pexels_url, "audio_url": yt_url}
