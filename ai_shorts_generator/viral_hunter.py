@@ -2,67 +2,110 @@ import os
 import yt_dlp
 import traceback
 import random
+import json
+import urllib.request
+
+
+REDDIT_NICHES = {
+    "marketing digital": ["r/marketing", "r/Entrepreneur", "r/startups"],
+    "renda extra e sucesso financeiro": ["r/financialindependence", "r/passive_income"],
+    "tecnologia e inteligencia artificial": ["r/artificial", "r/MachineLearning"],
+    "empreendedorismo e negocios": ["r/Entrepreneur", "r/business", "r/smallbusiness"],
+    "podcast de cortes milionarios": ["r/Entrepreneur", "r/investing"],
+    "AI and future technology": ["r/artificial", "r/Futurology"],
+    "Success mindset and money": ["r/getdisciplined", "r/selfimprovement"],
+    "Business scale and automation": ["r/Entrepreneur", "r/automation"],
+}
+
+
+def hunt_reddit_videos(subreddit):
+    print(f"Cacando no Reddit: {subreddit} ...")
+    url = f"https://www.reddit.com/{subreddit}/hot.json?limit=25"
+    headers = {"User-Agent": "Mozilla/5.0 (compatible; viral-bot/1.0)"}
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=15) as response:
+            data = json.loads(response.read().decode())
+        posts = data.get("data", {}).get("children", [])
+        video_posts = []
+        for post in posts:
+            p = post.get("data", {})
+            is_video = p.get("is_video", False)
+            post_url = p.get("url", "")
+            domain = p.get("domain", "")
+            score = p.get("score", 0)
+            title = p.get("title", "Sem titulo")
+            permalink = p.get("permalink", "")
+            if is_video or domain in ["v.redd.it", "youtube.com", "youtu.be"]:
+                final_url = f"https://www.reddit.com{permalink}" if is_video else post_url
+                if score > 50:
+                    video_posts.append({"url": final_url, "title": title, "score": score})
+        if not video_posts:
+            print(f"Nenhum video com engajamento em {subreddit}.")
+            return None
+        video_posts.sort(key=lambda x: x["score"], reverse=True)
+        best = video_posts[0]
+        print(f"Reddit encontrou: {best['title']} (score: {best['score']})")
+        return best["url"]
+    except Exception as e:
+        print(f"Erro Reddit ({subreddit}): {e}")
+        return None
+
+
+def hunt_youtube_videos(topic, max_results=5):
+    search_query = f"ytsearch{max_results}:{topic} podcast"
+    print(f"Buscando no YouTube: {search_query}")
+    ydl_opts = {
+        "extract_flat": True,
+        "quiet": True,
+        "no_warnings": True,
+        "playlistend": max_results,
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        },
+    }
+    cookies_b64 = os.getenv("YT_COOKIES_B64")
+    if cookies_b64:
+        import base64
+        with open("/tmp/yt_cookies.txt", "wb") as f:
+            f.write(base64.b64decode(cookies_b64))
+        ydl_opts["cookiefile"] = "/tmp/yt_cookies.txt"
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(search_query, download=False)
+            entries = info.get("entries", [])
+            valid = [e for e in entries if e and e.get("duration", 0) > 120]
+            if not valid:
+                return None
+            best = sorted(valid, key=lambda x: x.get("view_count", 0) or 0, reverse=True)[0]
+            url = f"https://www.youtube.com/watch?v={best.get('id')}"
+            print(f"YouTube: {best.get('title')} | views: {best.get('view_count', 0)}")
+            return url
+    except Exception as e:
+        print(f"YouTube bloqueou ou erro: {e}")
+        return None
 
 
 def hunt_viral_videos(topic_or_url, is_profile=False, max_results=5):
-    print(f"Iniciando Cacada Viral: '{topic_or_url}'")
-    if not is_profile and not topic_or_url.startswith('http'):
-        search_query = f"ytsearch{max_results}:{topic_or_url} podcast"
-    else:
-        search_query = topic_or_url
-
-    ydl_opts = {
-        'extract_flat': True,
-        'quiet': True,
-        'no_warnings': True,
-        'playlistend': max_results,
-    }
-
-    results = []
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            print(f"Varrendo a rede: {search_query}...")
-            info = ydl.extract_info(search_query, download=False)
-            if 'entries' in info:
-                for entry in info['entries']:
-                    if entry:
-                        vid_url = entry.get('url') or f"https://www.youtube.com/watch?v={entry.get('id')}"
-                        results.append({
-                            'id': entry.get('id'),
-                            'title': entry.get('title'),
-                            'url': vid_url,
-                            'view_count': entry.get('view_count', 0),
-                            'duration': entry.get('duration', 0)
-                        })
-            else:
-                results.append({
-                    'id': info.get('id'),
-                    'title': info.get('title'),
-                    'url': info.get('webpage_url', topic_or_url),
-                    'view_count': info.get('view_count', 0),
-                    'duration': info.get('duration', 0)
-                })
-    except Exception as e:
-        print(f"Erro ao cacar videos: {e}")
-        traceback.print_exc()
-        return None
-
-    valid_videos = [v for v in results if v.get('duration') and v['duration'] > 300]
-    if not valid_videos:
-        valid_videos = results
-    if not valid_videos:
-        print("Nenhum video valido encontrado.")
-        return None
-
-    valid_videos.sort(key=lambda x: x.get('view_count') or 0, reverse=True)
-    best_video = valid_videos[0]
-    print(f"ALVO ENCONTRADO: {best_video['title']}")
-    print(f"Duracao: {best_video['duration']}s | Views: {best_video['view_count']}")
-    print(f"Link: {best_video['url']}")
-    return best_video['url']
+    if is_profile or topic_or_url.startswith("http"):
+        return topic_or_url
+    print(f"\nIniciando Cacada Viral: '{topic_or_url}'")
+    subreddits = REDDIT_NICHES.get(topic_or_url, ["r/Entrepreneur", "r/videos"])
+    random.shuffle(subreddits)
+    for sub in subreddits:
+        url = hunt_reddit_videos(sub)
+        if url:
+            print(f"Reddit retornou: {url}")
+            return url
+    print("Reddit sem resultados. Tentando YouTube...")
+    url = hunt_youtube_videos(topic_or_url, max_results)
+    if url:
+        return url
+    print(f"Nenhuma fonte encontrou video para: {topic_or_url}")
+    return None
 
 
 def feed_video_to_pipeline(video_url):
-    with open("input.txt", 'w', encoding='utf-8') as f:
+    with open("input.txt", "w", encoding="utf-8") as f:
         f.write(video_url)
     print("Video alimentado na Fabrica de Cortes.")
