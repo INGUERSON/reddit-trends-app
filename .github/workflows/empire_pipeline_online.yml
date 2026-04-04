@@ -7,6 +7,7 @@ on:
     # Como o cron não aceita intervalos de 10h perfeitos com precisão, 
     # rodamos a cada 10 horas via workflow_dispatch ou simulado
     - cron: '0 */10 * * *'
+
   workflow_dispatch:
     # Permite rodar manualmente a qualquer momento no GitHub Actions
 
@@ -44,6 +45,7 @@ jobs:
           IG_USERNAME: "${{ secrets.IG_USERNAME }}"
           IG_PASSWORD: "${{ secrets.IG_PASSWORD }}"
           STRIPE_PRODUCT_URL: "${{ secrets.STRIPE_PRODUCT_URL }}"
+          PEXELS_API_KEY: "${{ secrets.PEXELS_API_KEY }}"
         run: |
           # Rodamos o pipeline em modo "Single Cycle" (Sem loop infinito para o GitHub)
           cd ai_shorts_generator
