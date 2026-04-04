@@ -88,7 +88,7 @@ def post_to_instagram(video_path, caption):
         print(f"Falha na postagem: {e}")
         if os.path.exists(session_file):
             os.remove(session_file)
-            print("Sessao corrompida removida.")
+            print("Sessao corrompida removida. Tente novamente.")
         return False
 
 
