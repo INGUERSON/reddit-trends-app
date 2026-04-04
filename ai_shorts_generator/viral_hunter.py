@@ -7,10 +7,10 @@ import urllib.request
 
 
 REDDIT_NICHES = {
-    "marketing digital": ["r/marketing", "r/Entrepreneur", "r/startups"],
+    "marketing digital": ["r/marketing", "r/Entrepreneur"],
     "renda extra e sucesso financeiro": ["r/financialindependence", "r/passive_income"],
     "tecnologia e inteligencia artificial": ["r/artificial", "r/MachineLearning"],
-    "empreendedorismo e negocios": ["r/Entrepreneur", "r/business", "r/smallbusiness"],
+    "empreendedorismo e negocios": ["r/Entrepreneur", "r/business"],
     "podcast de cortes milionarios": ["r/Entrepreneur", "r/investing"],
     "AI and future technology": ["r/artificial", "r/Futurology"],
     "Success mindset and money": ["r/getdisciplined", "r/selfimprovement"],
@@ -45,7 +45,7 @@ def hunt_reddit_videos(subreddit):
             return None
         video_posts.sort(key=lambda x: x["score"], reverse=True)
         best = video_posts[0]
-        print(f"Reddit encontrou: {best['title']} (score: {best['score']})")
+        print(f"Reddit encontrou: {best[String.fromCharCode(39)+'title'+String.fromCharCode(39)]} (score: {best[String.fromCharCode(39)+'score'+String.fromCharCode(39)]})")
         return best["url"]
     except Exception as e:
         print(f"Erro Reddit ({subreddit}): {e}")
@@ -60,9 +60,7 @@ def hunt_youtube_videos(topic, max_results=5):
         "quiet": True,
         "no_warnings": True,
         "playlistend": max_results,
-        "http_headers": {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        },
+        "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
     }
     cookies_b64 = os.getenv("YT_COOKIES_B64")
     if cookies_b64:
@@ -78,8 +76,9 @@ def hunt_youtube_videos(topic, max_results=5):
             if not valid:
                 return None
             best = sorted(valid, key=lambda x: x.get("view_count", 0) or 0, reverse=True)[0]
-            url = f"https://www.youtube.com/watch?v={best.get('id')}"
-            print(f"YouTube: {best.get('title')} | views: {best.get('view_count', 0)}")
+            vid_id = best.get("id", "")
+            url = "https://www.youtube.com/watch?v=" + vid_id
+            print(f"YouTube: {best.get(String.fromCharCode(34)+'title'+String.fromCharCode(34))} | views: {best.get(String.fromCharCode(34)+'view_count'+String.fromCharCode(34), 0)}")
             return url
     except Exception as e:
         print(f"YouTube bloqueou ou erro: {e}")
@@ -89,10 +88,10 @@ def hunt_youtube_videos(topic, max_results=5):
 def hunt_viral_videos(topic_or_url, is_profile=False, max_results=5):
     if is_profile or topic_or_url.startswith("http"):
         return topic_or_url
-    print(f"\nIniciando Cacada Viral: '{topic_or_url}'")
-    subreddits = REDDIT_NICHES.get(topic_or_url, ["r/Entrepreneur", "r/videos"])
-    random.shuffle(subreddits)
-    for sub in subreddits:
+    print(f"Iniciando Cacada Viral: {topic_or_url}")
+    subs = REDDIT_NICHES.get(topic_or_url, ["r/Entrepreneur", "r/videos"])
+    random.shuffle(subs)
+    for sub in subs:
         url = hunt_reddit_videos(sub)
         if url:
             print(f"Reddit retornou: {url}")
@@ -108,4 +107,4 @@ def hunt_viral_videos(topic_or_url, is_profile=False, max_results=5):
 def feed_video_to_pipeline(video_url):
     with open("input.txt", "w", encoding="utf-8") as f:
         f.write(video_url)
-    print("Video alimentado na Fabrica de Cortes.")
+    print("Video alimentado.")
