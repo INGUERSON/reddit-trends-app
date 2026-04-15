@@ -5,10 +5,15 @@ echo Criando pasta "Projetos_Arquivados" em Downloads...
 mkdir "%dest%" 2>nul
 
 echo Movendo pastas de projetos...
-move "Agentic-Design-Study" "%dest%\"
-move "ai_shorts_generator" "%dest%\"
-move "animated_site_study" "%dest%\"
-move "beginner-portfolio" "%dest%\"
+move "Agentic-Design-Study" "%dest%\" 2>nul
+
+echo Arquivando ai_shorts_generator...
+set TIMESTAMP=%date:~-4,4%%date:~-7,2%%date:~-10,2%_%time:~0,2%%time:~3,2%
+set TIMESTAMP=%TIMESTAMP: =0%
+move "ai_shorts_generator" "%dest%\ai_shorts_generator_%TIMESTAMP%" 2>nul
+
+move "animated_site_study" "%dest%\" 2>nul
+move "beginner-portfolio" "%dest%\" 2>nul
 move "cybersecurity_tools" "%dest%\"
 move "dashboard_saas" "%dest%\"
 move "igor-portfolio" "%dest%\"

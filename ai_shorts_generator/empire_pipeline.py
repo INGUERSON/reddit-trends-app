@@ -62,14 +62,40 @@ def execute_full_cycle():
     print(f"Fabrica concluiu: {len(generated_clips)} clipes gerados!")
 
     try:
-        auto_publish(generated_clips, nicho, lang=idioma)
+        postados = auto_publish(generated_clips, nicho, lang=idioma)
     except Exception as e:
         print(f"Erro na Publicacao: {e}")
+        postados = 0
         import traceback
         traceback.print_exc()
 
+    print("\nLimpando arquivos gerados e baixados para liberar espaco...")
+    # Limpa os videos cortados APENAS SE FORAM POSTADOS
+    if postados > 0:
+        for video_file in generated_clips:
+            try:
+                if os.path.exists(video_file):
+                    os.remove(video_file)
+                    print(f"Deletado arquivo de output: {video_file}")
+            except Exception as e:
+                print(f"Erro ao deletar {video_file}: {e}")
+    else:
+        print("Videos de output matidos na pasta 'output/' pois a postagem falhou ou gerou erro.")
+
+    # Limpa a pasta de downloads
+    downloads_dir = "downloads"
+    if os.path.exists(downloads_dir):
+        for f in os.listdir(downloads_dir):
+            file_path = os.path.join(downloads_dir, f)
+            try:
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+                    print(f"Deletado download: {f}")
+            except Exception as e:
+                pass
+
     print("\n" + "="*54)
-    print("CICLO COMPLETO FINALIZADO.")
+    print("CICLO COMPLETO FINALIZADO E HD LIMPO.")
     print("="*54 + "\n")
     return True
 

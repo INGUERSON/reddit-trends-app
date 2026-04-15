@@ -52,6 +52,8 @@ def post_to_instagram(video_path, caption):
     print(f"Preparando Postagem no Instagram: {os.path.basename(video_path)}")
 
     cl = Client()
+    cl.delay_range = [3, 9]  # Delay aleatorio como um humano real para evitar bloqueio
+    
     user = get_secure_env("IG_USERNAME")
     password = get_secure_env("IG_PASSWORD")
 
@@ -67,10 +69,17 @@ def post_to_instagram(video_path, caption):
             cl.load_settings(session_file)
             cl.login(user, password)
         else:
-            print(f"Autenticando usuario: {user}...")
-            cl.login(user, password)
-            cl.dump_settings(session_file)
-            print("Sessao salva para proximo uso.")
+            session_id = get_secure_env("IG_SESSIONID")
+            if session_id:
+                print("Autenticando via IG_SESSIONID de alta seguranca...")
+                cl.login_by_sessionid(session_id)
+                cl.dump_settings(session_file)
+                print("Sessao salva para proximo uso com base no Session ID.")
+            else:
+                print(f"Autenticando usuario por senha: {user}...")
+                cl.login(user, password)
+                cl.dump_settings(session_file)
+                print("Sessao salva para proximo uso.")
 
         print("Enviando Reels...")
         media = cl.clip_upload(

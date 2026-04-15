@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyber Defense Tycoon | Proteja Seu Servidor</title>
+  <meta name="description" content="Jogo de estratégia de cibersegurança. Defenda seu servidor contra hackers e ataques cibernéticos comprando upgrades de defesa." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="matrixCanvas"></canvas>
+
+  <!-- HUD Top Bar -->
+  <header class="hud-top">
+    <div class="hud-brand">
+      <span class="hud-icon">🛡️</span>
+      <span class="hud-title">CYBER DEFENSE TYCOON</span>
+    </div>
+    <div class="hud-stats">
+      <div class="stat-chip" id="chip-credits">
+        <span class="stat-label">CRÉDITOS</span>
+        <span class="stat-value" id="credits-display">0</span>
+        <span class="stat-rate" id="credits-rate">+0/s</span>
+      </div>
+      <div class="stat-chip wave-chip">
+        <span class="stat-label">ONDA</span>
+        <span class="stat-value" id="wave-display">1</span>
+      </div>
+      <div class="stat-chip score-chip">
+        <span class="stat-label">SCORE</span>
+        <span class="stat-value" id="score-display">0</span>
+      </div>
+      <div class="stat-chip time-chip">
+        <span class="stat-label">TEMPO</span>
+        <span class="stat-value" id="time-display">00:00</span>
+      </div>
+    </div>
+    <button class="btn-pause" id="btn-pause">⏸ PAUSA</button>
+  </header>
+
+  <!-- Main Layout -->
+  <main class="game-layout">
+
+    <!-- LEFT PANEL: Server Status -->
+    <aside class="panel panel-left">
+      <h2 class="panel-title">🖥️ SERVIDOR ALPHA</h2>
+
+      <!-- Health -->
+      <div class="server-health">
+        <div class="health-header">
+          <span>INTEGRIDADE DO SISTEMA</span>
+          <span id="health-pct">100%</span>
+        </div>
+        <div class="health-bar-track">
+          <div class="health-bar-fill" id="health-bar"></div>
+        </div>
+      </div>
+
+      <!-- Traffic -->
+      <div class="traffic-widget">
+        <div class="traffic-header">
+          <span>TRÁFEGO LEGÍTIMO</span>
+          <span id="traffic-pct">0%</span>
+        </div>
+        <div class="health-bar-track">
+          <div class="traffic-bar-fill" id="traffic-bar"></div>
+        </div>
+      </div>
+
+      <!-- Active Defenses -->
+      <div class="defenses-active">
+        <h3 class="section-label">DEFESAS ATIVAS</h3>
+        <div id="active-defenses-list" class="defense-tags">
+          <span class="tag tag-empty">Nenhuma defesa instalada</span>
+        </div>
+      </div>
+
+      <!-- Attack Log -->
+      <div class="attack-log">
+        <h3 class="section-label">📡 LOG DO SISTEMA</h3>
+        <div id="log-container" class="log-entries"></div>
+      </div>
+    </aside>
+
+    <!-- CENTER PANEL: Attack Arena -->
+    <section class="panel panel-center">
+      <div class="arena-header">
+        <h2 class="panel-title">⚔️ ARENA DE ATAQUE</h2>
+        <div class="wave-status" id="wave-status">🟢 SISTEMA ESTÁVEL</div>
+      </div>
+
+      <!-- Incoming Attacks -->
+      <div class="attacks-arena" id="attacks-arena">
+        <div class="arena-idle" id="arena-idle">
+          <div class="idle-icon">🛡️</div>
+          <div class="idle-text">Aguardando ataques...</div>
+          <div class="idle-sub">Próxima onda chegando em <span id="next-attack-timer">--</span>s</div>
+        </div>
+      </div>
+
+      <!-- Next Wave Preview -->
+      <div class="wave-preview">
+        <h3 class="section-label">🌊 PRÓXIMA ONDA</h3>
+        <div id="wave-preview-content" class="wave-preview-list">
+          <span class="preview-text">Coletando inteligência...</span>
+        </div>
+      </div>
+
+      <!-- Global Progress -->
+      <div class="progress-section">
+        <div class="progress-header">
+          <span>PROGRESSO DA ONDA <span id="wave-progress-label">1</span></span>
+          <span id="attacks-defeated">0 ataques neutralizados</span>
+        </div>
+        <div class="health-bar-track">
+          <div class="progress-bar-fill" id="wave-progress-bar"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: Shop -->
+    <aside class="panel panel-right">
+      <h2 class="panel-title">🏪 LOJA DE DEFESAS</h2>
+      <p class="shop-subtitle">Instale defesas para neutralizar ataques específicos</p>
+
+      <div class="shop-grid" id="shop-grid">
+        <!-- Populated by JS -->
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Achievement Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Game Over / Victory Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-box" id="modal-box">
+      <div class="modal-icon" id="modal-icon">💀</div>
+      <h2 class="modal-title" id="modal-title">SISTEMA COMPROMETIDO</h2>
+      <p class="modal-desc" id="modal-desc">Os hackers venceram desta vez...</p>
+      <div class="modal-stats" id="modal-stats"></div>
+      <div class="modal-actions">
+        <button class="btn-primary" id="btn-restart">🔄 JOGAR NOVAMENTE</button>
+        <button class="btn-secondary" id="btn-share">📤 COMPARTILHAR SCORE</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

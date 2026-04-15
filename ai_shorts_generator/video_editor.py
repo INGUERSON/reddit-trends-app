@@ -1,6 +1,10 @@
 import os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+import PIL.Image
+if not hasattr(PIL.Image, 'ANTIALIAS'):
+    PIL.Image.ANTIALIAS = PIL.Image.Resampling.LANCZOS
+
 from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip, AudioFileClip
 from moviepy.video.fx.all import crop
 
@@ -56,8 +60,20 @@ def edit_and_render_clip(video_path, audio_path, start_time, end_time, words_dat
 
     # 1. Carrega o vídeo original e junta o áudio extraído (garante 1080p sem mute)
     try:
-        video = VideoFileClip(video_path).subclip(start_time, end_time)
         audio = AudioFileClip(audio_path).subclip(start_time, end_time)
+        clip_duration = end_time - start_time
+
+        from moviepy.video.fx.all import loop
+        
+        # Carrega o vídeo completo
+        video = VideoFileClip(video_path)
+        
+        # Se o video for mais curto que o tempo inicial absoluto ou mais curto que o clipe
+        # Corta apenas a duração que precisamos começando do segundo 0 (com loop caso necessário)
+        if video.duration < clip_duration:
+            video = loop(video, duration=clip_duration)
+        else:
+            video = video.subclip(0, clip_duration)
 
         # Otimização de Áudio: Normalização de volume para clareza
         from moviepy.audio.fx.all import audio_normalize
@@ -65,6 +81,8 @@ def edit_and_render_clip(video_path, audio_path, start_time, end_time, words_dat
         video = video.set_audio(audio)
     except Exception as e:
         print(f"❌ Falha ao carregar o vídeo ou áudio: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
     # 2. Formato Vertical 9:16 (TikTok/Reels/Shorts)

@@ -5,20 +5,35 @@ import base64
 import traceback
 import requests
 import yt_dlp
+import imageio_ffmpeg
+
+def _get_ffmpeg_path():
+    try:
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return None
 
 
 def _get_cookies_opts():
-    """Retorna opcoes de cookies para yt-dlp se disponiveis."""
+    """
+    Retorna opcoes de cookies para yt-dlp.
+    - No GitHub Actions: usa YT_COOKIES_B64 (base64 do arquivo de cookies)
+    """
+    # Prioridade 1: secret do GitHub Actions / .env local
     cookies_b64 = os.getenv("YT_COOKIES_B64")
     if cookies_b64:
         cookies_path = "/tmp/yt_cookies.txt"
         try:
+            # Cria a pasta caso nao exista (pode faltar no Windows)
+            os.makedirs(os.path.dirname(cookies_path), exist_ok=True)
             with open(cookies_path, "wb") as f:
                 f.write(base64.b64decode(cookies_b64))
-            print("Cookies do YouTube carregados.")
+            print("Cookies do YouTube carregados via texto codificado.")
             return {"cookiefile": cookies_path}
         except Exception as e:
-            print(f"Erro ao carregar cookies: {e}")
+            print(f"Erro ao carregar cookies base64: {e}")
+
+    # Sem cookies por padrao. PC local geralmente nao e bloqueado pelo YouTube (IP residencial)
     return {}
 
 
@@ -82,6 +97,11 @@ def download_youtube_audio_only(url, output_path="downloads"):
         # Baixa apenas os primeiros 15 minutos (suficiente para 3 clips virais)
         "postprocessor_args": ["-t", "900"],
     }
+    
+    ffmpeg_exe = _get_ffmpeg_path()
+    if ffmpeg_exe:
+        audio_opts["ffmpeg_location"] = ffmpeg_exe
+
     audio_opts.update(_get_cookies_opts())
 
     try:
@@ -132,6 +152,11 @@ def download_youtube_video(url, output_path="downloads"):
         "socket_timeout": 60,
         "retries": 3,
     }
+
+    ffmpeg_exe = _get_ffmpeg_path()
+    if ffmpeg_exe:
+        video_opts["ffmpeg_location"] = ffmpeg_exe
+
     video_opts.update(_get_cookies_opts())
 
     video_path = None
